@@ -1,530 +1,444 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeltaPro | Enterprise Talent Intelligence</title>
+    <title>DeltaPro | Enterprise Workspace</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
-                fontFamily: { sans: ['Inter', 'sans-serif'] },
+                fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
                 extend: {
                     colors: {
-                        brand: { 50: '#f0f9ff', 500: '#3b82f6', 600: '#2563eb', 900: '#0f172a' },
-                        surface: { 800: '#1e293b', 900: '#0f172a' }
+                        background: '#09090b',
+                        surface: '#18181b',
+                        surfaceHighlight: '#27272a',
+                        border: '#27272a',
+                        primary: '#3b82f6',
+                        primaryDim: 'rgba(59, 130, 246, 0.1)'
                     }
                 }
             }
         }
     </script>
-
     <style>
-        /* Custom UX Polish */
-        body { background-color: #020617; color: #f8fafc; }
-        .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-        .nav-active { border-bottom: 2px solid #3b82f6; color: white; }
+        body { background-color: #09090b; color: #e4e4e7; }
+        .glass { background: rgba(24, 24, 27, 0.7); backdrop-filter: blur(8px); }
+        .sidebar-link.active { background: #27272a; color: white; border-right: 2px solid #3b82f6; }
         
-        /* Loading Animation */
-        .loader-bar { height: 4px; background: #3b82f6; width: 0%; transition: width 0.3s ease; }
-        
-        /* Transitions */
-        .fade-enter { opacity: 0; transform: translateY(10px); }
-        .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 0.4s, transform 0.4s; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        /* Command Palette Animation */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.1s ease-out; }
     </style>
 </head>
-<body class="antialiased h-screen flex flex-col overflow-hidden">
+<body class="h-screen flex overflow-hidden text-sm">
 
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
-
-    <nav class="h-16 border-b border-white/10 glass-panel flex items-center justify-between px-6 z-40">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-brand-600 rounded flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.5)]">
-                <i class="fa-solid fa-layer-group text-white text-sm"></i>
-            </div>
-            <span class="font-bold text-lg tracking-tight">DeltaPro <span class="text-xs text-slate-500 font-normal ml-2 border border-slate-700 px-1 rounded">BETA</span></span>
+    <aside class="w-64 border-r border-border bg-surface flex flex-col z-20">
+        <div class="h-14 flex items-center gap-3 px-4 border-b border-border">
+            <div class="w-6 h-6 bg-primary rounded flex items-center justify-center text-white text-xs font-bold">D</div>
+            <span class="font-bold tracking-tight text-white">DeltaPro <span class="text-[10px] text-zinc-500 font-normal">ENT</span></span>
         </div>
 
-        <div id="nav-auth" class="hidden items-center gap-6 text-sm font-medium text-slate-400">
-            <button onclick="Router.navigate('dashboard')" class="hover:text-white transition" id="link-dashboard">Dashboard</button>
-            <button onclick="Router.navigate('analysis')" class="hover:text-white transition" id="link-analysis">Analysis Engine</button>
-            <div class="h-4 w-px bg-slate-700"></div>
-            <div class="flex items-center gap-3">
-                <div class="text-right hidden md:block">
-                    <div class="text-xs text-slate-500">Logged in as</div>
-                    <div class="text-white" id="user-email-display">user@enterprise.com</div>
-                </div>
-                <button onclick="Auth.logout()" class="p-2 hover:bg-white/10 rounded-full transition text-slate-400 hover:text-red-400" title="Logout">
-                    <i class="fa-solid fa-power-off"></i>
+        <div class="p-3">
+            <div class="mb-4">
+                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2">Platform</div>
+                <button onclick="App.navigate('dashboard')" class="sidebar-link active w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-chart-pie w-4"></i> Dashboard
+                </button>
+                <button onclick="App.navigate('directory')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-users w-4"></i> Talent Directory
+                </button>
+                <button onclick="App.navigate('inference')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-microchip w-4"></i> AI Inference
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2">Configuration</div>
+                <button onclick="App.navigate('integrations')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-plug w-4"></i> Integrations
+                </button>
+                <button onclick="App.navigate('settings')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-cog w-4"></i> Settings
                 </button>
             </div>
         </div>
-    </nav>
 
-    <main id="app-root" class="flex-1 overflow-y-auto relative">
-        </main>
+        <div class="mt-auto p-4 border-t border-border">
+            <div class="flex items-center gap-3">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=27272a&color=fff" class="w-8 h-8 rounded-full border border-zinc-600">
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs font-medium text-white truncate">sysadmin@zaziza.com</div>
+                    <div class="text-[10px] text-zinc-500">Global Admin</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col relative bg-background">
+        
+        <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-background/50 backdrop-blur sticky top-0 z-10">
+            <div class="flex items-center gap-4 text-zinc-400">
+                <span id="page-title" class="font-medium text-white">Dashboard</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="Palette.toggle()" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded text-xs text-zinc-400 hover:border-zinc-500 transition">
+                    <span>Search or jump to...</span>
+                    <kbd class="font-mono bg-zinc-800 px-1 rounded text-[10px] border border-zinc-700">Ctrl K</kbd>
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white relative">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+            </div>
+        </header>
+
+        <div id="app-view" class="flex-1 overflow-y-auto p-8">
+            </div>
+
+    </main>
+
+    <div id="cmd-palette" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center pt-[20vh]" onclick="Palette.toggle()">
+        <div class="w-full max-w-lg bg-surface border border-border rounded-xl shadow-2xl overflow-hidden modal-enter-active" onclick="event.stopPropagation()">
+            <div class="flex items-center px-4 border-b border-border">
+                <i class="fa-solid fa-search text-zinc-500 mr-3"></i>
+                <input type="text" placeholder="Type a command or search..." class="w-full h-12 bg-transparent border-none focus:ring-0 text-white placeholder-zinc-500 outline-none">
+                <kbd class="font-mono text-[10px] text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">ESC</kbd>
+            </div>
+            <div class="py-2">
+                <div class="px-4 py-2 text-[10px] font-bold text-zinc-500 uppercase">Suggestions</div>
+                <button onclick="App.navigate('inference'); Palette.toggle()" class="w-full text-left px-4 py-2 text-zinc-300 hover:bg-primary hover:text-white flex items-center gap-3">
+                    <i class="fa-solid fa-plus w-3"></i> New Talent Analysis
+                </button>
+                <button onclick="App.navigate('directory'); Palette.toggle()" class="w-full text-left px-4 py-2 text-zinc-300 hover:bg-primary hover:text-white flex items-center gap-3">
+                    <i class="fa-solid fa-user-group w-3"></i> Search Directory
+                </button>
+            </div>
+            <div class="bg-zinc-900 px-4 py-2 text-[10px] text-zinc-500 flex justify-between">
+                <span>DeltaPro Intelligence Engine v2.1.0</span>
+                <span>Zaziza Holdings</span>
+            </div>
+        </div>
+    </div>
 
     <script>
-        /** * CORE UTILITIES 
-         * ------------------------------------------
-         * Helper functions for DOM and UX 
-         */
-        const Utils = {
-            sleep: (ms) => new Promise(r => setTimeout(r, ms)),
-            
-            showToast: (message, type = 'info') => {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                const colors = type === 'error' ? 'border-red-500 text-red-400' : 'border-green-500 text-green-400';
-                const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
-                
-                toast.className = `p-4 rounded bg-slate-800 border-l-4 shadow-xl flex items-center gap-3 min-w-[300px] animate-[slideIn_0.3s] ${colors}`;
-                toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span class="text-sm font-medium text-white">${message}</span>`;
-                
-                container.appendChild(toast);
-                setTimeout(() => toast.remove(), 4000);
-            },
-
-            formatDate: () => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        // --- 1. MOCK DATA LAYER (The "Database") ---
+        const DB = {
+            users: Array.from({ length: 25 }, (_, i) => ({
+                id: `EMP-${1000 + i}`,
+                name: ['Sarah Connor', 'John Smith', 'Wei Chen', 'Amara Okafor', 'Elena Vost'][i % 5] + ` ${i}`,
+                role: ['Frontend Dev', 'Backend Lead', 'Data Scientist', 'DevOps Eng', 'Product Mgr'][i % 5],
+                dept: ['Engineering', 'Platform', 'AI Research', 'Ops', 'Product'][i % 5],
+                riskScore: Math.floor(Math.random() * 100),
+                lastActive: `${Math.floor(Math.random() * 24)}h ago`
+            })),
+            logs: [
+                { action: "API Key Created", user: "Admin", time: "2m ago" },
+                { action: "Integration Sync (Workday)", status: "Success", time: "15m ago" },
+                { action: "Talent Analysis #4022", status: "Complete", time: "1h ago" }
+            ]
         };
 
-        /**
-         * STATE STORE 
-         * ------------------------------------------
-         * Centralized state management with persistence
-         */
-        const Store = {
-            state: {
-                user: JSON.parse(localStorage.getItem('dp_user')) || null,
-                metrics: {
-                    skillsParsed: 1240,
-                    risksIdentified: 8,
-                    processingTime: '0.4s'
-                },
-                recentAnalyses: JSON.parse(localStorage.getItem('dp_analyses')) || []
-            },
-
-            setUser(user) {
-                this.state.user = user;
-                localStorage.setItem('dp_user', JSON.stringify(user));
-                Router.refresh();
-            },
-
-            addAnalysis(result) {
-                this.state.recentAnalyses.unshift(result);
-                localStorage.setItem('dp_analyses', JSON.stringify(this.state.recentAnalyses));
-            },
-
-            clear() {
-                this.state.user = null;
-                localStorage.removeItem('dp_user');
-                Router.navigate('login');
-            }
-        };
-
-        /**
-         * MOCK API LAYER
-         * ------------------------------------------
-         * Simulates backend logic and latency
-         */
-        const API = {
-            async login(email, password) {
-                await Utils.sleep(800); // Network latency
-                if (password.length < 6) throw new Error("Password invalid (min 6 chars)");
-                return { email: email, token: 'xyz_jwt_token_123', role: 'admin' };
-            },
-
-            async analyzeFile(file) {
-                await Utils.sleep(2000); // Simulate heavy AI processing
-                
-                // Deterministic Mock Response based on file name or random
-                const score = Math.floor(Math.random() * (95 - 60) + 60);
-                
-                return {
-                    id: Date.now(),
-                    filename: file.name,
-                    date: Utils.formatDate(),
-                    riskScore: score,
-                    skills: ['Python', 'TensorFlow', 'React', 'Project Mgmt', 'AWS'],
-                    missing: ['Kubernetes', 'CI/CD'],
-                    status: score > 80 ? 'Low Risk' : 'High Risk'
-                };
-            }
-        };
-
-        /**
-         * VIEW CONTROLLER (ROUTER)
-         * ------------------------------------------
-         * Handles View Injection and Auth Guards
-         */
-        const Router = {
-            root: document.getElementById('app-root'),
-
-            init() {
-                if (Store.state.user) {
-                    this.navigate('dashboard');
-                } else {
-                    this.navigate('login');
-                }
-            },
-
-            refresh() {
-                // Update Nav UI
-                const navAuth = document.getElementById('nav-auth');
-                const emailDisplay = document.getElementById('user-email-display');
-                
-                if (Store.state.user) {
-                    navAuth.classList.remove('hidden');
-                    navAuth.classList.add('flex');
-                    emailDisplay.textContent = Store.state.user.email;
-                } else {
-                    navAuth.classList.add('hidden');
-                    navAuth.classList.remove('flex');
-                }
-            },
-
-            navigate(route) {
-                this.refresh();
-                this.root.innerHTML = ''; // Clear current view
-                
-                // Route Guard
-                if (route !== 'login' && !Store.state.user) {
-                    route = 'login';
-                }
-
-                switch (route) {
-                    case 'login': return this.renderLogin();
-                    case 'dashboard': return this.renderDashboard();
-                    case 'analysis': return this.renderAnalysis();
-                }
-            },
-
-            // --- RENDERERS ---
-
-            renderLogin() {
-                this.root.innerHTML = `
-                    <div class="h-full flex items-center justify-center p-4 relative">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-600/20 blur-[120px] rounded-full pointer-events-none"></div>
-
-                        <div class="w-full max-w-md glass-panel p-8 rounded-2xl shadow-2xl relative z-10 fade-enter-active">
-                            <div class="text-center mb-8">
-                                <h1 class="text-3xl font-bold mb-2">Welcome Back</h1>
-                                <p class="text-slate-400">Sign in to your DeltaPro Workspace</p>
-                            </div>
-                            
-                            <form onsubmit="Auth.handleLogin(event)" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Work Email</label>
-                                    <input type="email" id="email" required placeholder="you@company.com" 
-                                        class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-brand-500 text-white transition">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Password</label>
-                                    <input type="password" id="password" required placeholder="••••••••" 
-                                        class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-brand-500 text-white transition">
-                                </div>
-                                <button type="submit" id="login-btn"
-                                    class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-brand-600/20">
-                                    Sign In
-                                </button>
-                            </form>
-                            <p class="mt-6 text-center text-xs text-slate-500">
-                                Protected by Zaziza Identity. <br>Demo Mode: Any password > 6 chars works.
-                            </p>
-                        </div>
+        // --- 2. COMPONENTS & VIEWS ---
+        const Views = {
+            dashboard: () => `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-surface border border-border p-5 rounded-lg">
+                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">Total Headcount</div>
+                        <div class="text-3xl font-bold text-white">1,240</div>
+                        <div class="flex items-center gap-2 mt-2 text-xs text-green-500"><i class="fa-solid fa-arrow-up"></i> 12% vs last Q</div>
                     </div>
-                `;
-            },
-
-            renderDashboard() {
-                const recentHTML = Store.state.recentAnalyses.length === 0 
-                    ? `<div class="text-slate-500 text-sm italic py-4">No recent analyses found. Start the engine.</div>`
-                    : Store.state.recentAnalyses.map(item => `
-                        <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded border border-slate-700 mb-2">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-slate-400">
-                                    <i class="fa-regular fa-file-pdf"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-white">${item.filename}</div>
-                                    <div class="text-xs text-slate-500">${item.date}</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-sm font-bold ${item.riskScore > 75 ? 'text-green-400' : 'text-yellow-400'}">${item.riskScore}% Match</div>
-                                <div class="text-xs text-slate-500">${item.status}</div>
-                            </div>
-                        </div>
-                    `).join('');
-
-                this.root.innerHTML = `
-                    <div class="max-w-7xl mx-auto p-8 fade-enter-active">
-                        <header class="mb-8 flex justify-between items-end">
-                            <div>
-                                <h1 class="text-3xl font-bold text-white">Executive Dashboard</h1>
-                                <p class="text-slate-400">Real-time workforce intelligence overview.</p>
-                            </div>
-                            <button onclick="Router.navigate('analysis')" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm transition">
-                                + New Analysis
-                            </button>
-                        </header>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="glass-panel p-6 rounded-xl border-t-4 border-brand-500">
-                                <div class="text-slate-400 text-xs font-bold uppercase mb-2">Skills Indexed</div>
-                                <div class="text-4xl font-bold text-white">${Store.state.metrics.skillsParsed}</div>
-                                <div class="text-xs text-green-400 mt-2">↑ 12% vs last month</div>
-                            </div>
-                            <div class="glass-panel p-6 rounded-xl border-t-4 border-yellow-500">
-                                <div class="text-slate-400 text-xs font-bold uppercase mb-2">Critical Gaps</div>
-                                <div class="text-4xl font-bold text-white">${Store.state.metrics.risksIdentified}</div>
-                                <div class="text-xs text-slate-500 mt-2">Requires L&D Intervention</div>
-                            </div>
-                            <div class="glass-panel p-6 rounded-xl border-t-4 border-purple-500">
-                                <div class="text-slate-400 text-xs font-bold uppercase mb-2">Engine Latency</div>
-                                <div class="text-4xl font-bold text-white">${Store.state.metrics.processingTime}</div>
-                                <div class="text-xs text-green-400 mt-2">Optimal Performance</div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div class="glass-panel p-6 rounded-xl">
-                                <h3 class="font-bold text-white mb-6">Talent Supply vs Demand</h3>
-                                <div class="h-64 relative">
-                                    <canvas id="mainChart"></canvas>
-                                </div>
-                            </div>
-
-                            <div class="glass-panel p-6 rounded-xl">
-                                <h3 class="font-bold text-white mb-6">Recent Inferences</h3>
-                                <div class="overflow-y-auto max-h-64 pr-2">
-                                    ${recentHTML}
-                                </div>
-                            </div>
-                        </div>
+                    <div class="bg-surface border border-border p-5 rounded-lg">
+                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">Critical Flight Risks</div>
+                        <div class="text-3xl font-bold text-white">42</div>
+                        <div class="flex items-center gap-2 mt-2 text-xs text-red-500"><i class="fa-solid fa-circle-exclamation"></i> Action Required</div>
                     </div>
-                `;
-                
-                // Initialize Chart after DOM injection
-                setTimeout(() => Charts.renderMain(), 50);
-            },
+                    <div class="bg-surface border border-border p-5 rounded-lg">
+                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">Skill Gaps (Org)</div>
+                        <div class="text-3xl font-bold text-white">18%</div>
+                        <div class="flex items-center gap-2 mt-2 text-xs text-zinc-500">Avg. Deficiency</div>
+                    </div>
+                    <div class="bg-surface border border-border p-5 rounded-lg">
+                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">System Health</div>
+                        <div class="text-3xl font-bold text-green-400">99.9%</div>
+                        <div class="flex items-center gap-2 mt-2 text-xs text-zinc-500">API Latency: 42ms</div>
+                    </div>
+                </div>
 
-            renderAnalysis() {
-                this.root.innerHTML = `
-                    <div class="max-w-4xl mx-auto p-8 fade-enter-active">
-                        <button onclick="Router.navigate('dashboard')" class="text-slate-500 hover:text-white mb-4 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                        </button>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-surface border border-border p-6 rounded-lg">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-medium text-white">Workforce Skill Velocity</h3>
+                            <select class="bg-zinc-900 border border-zinc-700 text-xs rounded px-2 py-1 text-zinc-400">
+                                <option>Last 6 Months</option>
+                                <option>Year to Date</option>
+                            </select>
+                        </div>
+                        <div class="h-64"><canvas id="mainChart"></canvas></div>
+                    </div>
+
+                    <div class="bg-surface border border-border p-6 rounded-lg flex flex-col">
+                        <h3 class="font-medium text-white mb-4">System Events</h3>
+                        <div class="flex-1 overflow-y-auto space-y-4">
+                            ${DB.logs.map(log => `
+                                <div class="flex gap-3 text-sm">
+                                    <div class="w-2 h-2 mt-1.5 rounded-full bg-zinc-600"></div>
+                                    <div>
+                                        <div class="text-zinc-300">${log.action}</div>
+                                        <div class="text-xs text-zinc-500">${log.user || log.status} • ${log.time}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="mt-4 w-full py-2 text-xs text-zinc-500 border border-zinc-700 rounded hover:bg-zinc-800 transition">View All Logs</button>
+                    </div>
+                </div>
+            `,
+
+            directory: () => `
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Search employees..." class="bg-surface border border-border rounded-lg px-4 py-2 text-sm text-white w-64 focus:border-primary outline-none">
+                        <button class="px-4 py-2 bg-surface border border-border rounded-lg text-zinc-400 hover:text-white text-sm"><i class="fa-solid fa-filter mr-2"></i> Filter</button>
+                    </div>
+                    <button class="px-4 py-2 bg-primary hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition shadow-lg shadow-blue-900/20">
+                        <i class="fa-solid fa-plus mr-2"></i> Add Talent
+                    </button>
+                </div>
+
+                <div class="bg-surface border border-border rounded-lg overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-zinc-900/50 text-xs font-medium text-zinc-500 uppercase">
+                            <tr>
+                                <th class="px-6 py-3">Employee</th>
+                                <th class="px-6 py-3">Role</th>
+                                <th class="px-6 py-3">Department</th>
+                                <th class="px-6 py-3">Retention Risk</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border text-sm">
+                            ${DB.users.map(u => `
+                                <tr class="hover:bg-zinc-800/50 transition group">
+                                    <td class="px-6 py-4 font-medium text-white">${u.name} <div class="text-xs text-zinc-500 font-normal">${u.id}</div></td>
+                                    <td class="px-6 py-4 text-zinc-300">${u.role}</td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-400">${u.dept}</span></td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                                                <div class="h-full ${u.riskScore > 70 ? 'bg-green-500' : u.riskScore > 40 ? 'bg-yellow-500' : 'bg-red-500'}" style="width: ${u.riskScore}%"></div>
+                                            </div>
+                                            <span class="text-xs text-zinc-500">${u.riskScore}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs text-zinc-400">Active ${u.lastActive}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-zinc-500 hover:text-white opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-ellipsis"></i></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `,
+
+            inference: () => `
+                <div class="max-w-3xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h2 class="text-2xl font-bold text-white">AI Skill Inference Engine</h2>
+                        <p class="text-zinc-400 mt-2">Upload unstructured data to generate capability heatmaps.</p>
+                    </div>
+
+                    <div class="bg-surface border border-dashed border-zinc-700 rounded-xl p-12 text-center hover:border-primary hover:bg-primaryDim transition cursor-pointer group relative overflow-hidden" onclick="App.runInference()">
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-zinc-400 group-hover:text-primary"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-white">Drop Employee Data</h3>
+                            <p class="text-zinc-500 text-sm mt-1">Supports PDF, CSV, JSON (Max 50MB)</p>
+                        </div>
                         
-                        <h1 class="text-3xl font-bold text-white mb-2">Skill Inference Engine</h1>
-                        <p class="text-slate-400 mb-8">Upload unstructured employee data. AI will normalize skills and predict risk.</p>
-
-                        <div id="drop-zone" class="border-2 border-dashed border-slate-700 bg-slate-800/30 rounded-2xl p-12 text-center transition hover:border-brand-500 hover:bg-slate-800/50 relative overflow-hidden group">
-                            
-                            <div id="upload-initial">
-                                <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition shadow-lg">
-                                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-brand-500"></i>
-                                </div>
-                                <h3 class="text-xl font-bold text-white">Drag & Drop Resume (PDF)</h3>
-                                <p class="text-slate-500 mt-2 text-sm">Or click to browse files</p>
-                                <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf" onchange="Analysis.handleFile(this.files[0])">
-                            </div>
-
-                            <div id="upload-processing" class="hidden absolute inset-0 bg-slate-900 flex flex-col items-center justify-center z-10">
-                                <div class="w-64">
-                                    <div class="flex justify-between text-xs text-brand-400 font-mono mb-2">
-                                        <span id="process-step">Initializing NLP...</span>
-                                        <span id="process-pct">0%</span>
-                                    </div>
-                                    <div class="h-1 bg-slate-800 rounded-full overflow-hidden">
-                                        <div id="process-bar" class="h-full bg-brand-500 transition-all duration-300 w-0"></div>
-                                    </div>
-                                </div>
+                        <div id="inference-loader" class="hidden absolute inset-0 bg-surface flex flex-col items-center justify-center z-20">
+                            <div class="text-primary font-mono text-sm mb-2">Analyzing Vector Embeddings...</div>
+                            <div class="w-48 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary animate-[progress_2s_ease-in-out_infinite]"></div>
                             </div>
                         </div>
-
-                        <div id="analysis-result" class="hidden mt-8 animate-[slideIn_0.5s]">
-                            </div>
                     </div>
-                `;
-            }
-        };
 
-        /**
-         * AUTH LOGIC
-         * ------------------------------------------
-         */
-        const Auth = {
-            async handleLogin(e) {
-                e.preventDefault();
-                const btn = document.getElementById('login-btn');
-                const originalText = btn.innerText;
-                
-                // Loading State
-                btn.disabled = true;
-                btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...`;
+                    <div class="mt-8">
+                        <h3 class="text-xs font-bold text-zinc-500 uppercase mb-4">Recent Analyses</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 border border-border rounded-lg bg-surface hover:border-zinc-600 transition cursor-pointer">
+                                <div class="flex justify-between mb-2">
+                                    <i class="fa-regular fa-file-pdf text-red-400"></i>
+                                    <span class="text-xs text-green-400 font-mono">COMPLETED</span>
+                                </div>
+                                <div class="text-sm font-medium text-white">Backend_Team_Audit_Q4.pdf</div>
+                                <div class="text-xs text-zinc-500 mt-1">24 Employees Processed</div>
+                            </div>
+                             <div class="p-4 border border-border rounded-lg bg-surface hover:border-zinc-600 transition cursor-pointer">
+                                <div class="flex justify-between mb-2">
+                                    <i class="fa-regular fa-file-excel text-green-600"></i>
+                                    <span class="text-xs text-yellow-500 font-mono">PROCESSING</span>
+                                </div>
+                                <div class="text-sm font-medium text-white">Sales_Kickoff_Roster.csv</div>
+                                <div class="text-xs text-zinc-500 mt-1">Estimating skills...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
 
-                try {
-                    const email = document.getElementById('email').value;
-                    const password = document.getElementById('password').value;
+            settings: () => `
+                <div class="max-w-4xl">
+                    <h2 class="text-xl font-bold text-white mb-6">Platform Configuration</h2>
                     
-                    const user = await API.login(email, password);
-                    Store.setUser(user);
-                    Utils.showToast(`Welcome back, ${email}`);
-                    Router.navigate('dashboard');
-                } catch (err) {
-                    Utils.showToast(err.message, 'error');
-                    btn.disabled = false;
-                    btn.innerText = originalText;
-                }
-            },
-            logout() {
-                Store.clear();
-                Utils.showToast('Logged out successfully');
-            }
-        };
-
-        /**
-         * ANALYSIS LOGIC
-         * ------------------------------------------
-         */
-        const Analysis = {
-            async handleFile(file) {
-                if (!file) return;
-
-                // UI Transition to Processing
-                document.getElementById('upload-initial').classList.add('hidden');
-                document.getElementById('upload-processing').classList.remove('hidden');
-
-                const steps = [
-                    { msg: "Extracting Text Layer...", pct: 20 },
-                    { msg: "Vectorizing Keywords...", pct: 50 },
-                    { msg: "Comparing Ontology...", pct: 80 },
-                    { msg: "Finalizing Risk Score...", pct: 100 }
-                ];
-
-                // Simulate granular progress
-                for (let step of steps) {
-                    document.getElementById('process-step').innerText = step.msg;
-                    document.getElementById('process-pct').innerText = step.pct + '%';
-                    document.getElementById('process-bar').style.width = step.pct + '%';
-                    await Utils.sleep(600);
-                }
-
-                // Get Data
-                const result = await API.analyzeFile(file);
-                Store.addAnalysis(result);
-                
-                // Render Result
-                this.renderResult(result);
-            },
-
-            renderResult(data) {
-                // Reset Upload UI
-                document.getElementById('upload-processing').classList.add('hidden');
-                document.getElementById('upload-initial').classList.remove('hidden');
-                document.getElementById('file-input').value = ''; 
-
-                const container = document.getElementById('analysis-result');
-                container.classList.remove('hidden');
-
-                const riskColor = data.riskScore > 80 ? 'text-green-400' : 'text-yellow-400';
-                const barColor = data.riskScore > 80 ? 'bg-green-500' : 'bg-yellow-500';
-
-                container.innerHTML = `
-                    <div class="glass-panel p-8 rounded-xl border border-slate-700">
-                        <div class="flex justify-between items-start border-b border-slate-700 pb-6 mb-6">
-                            <div>
-                                <h2 class="text-2xl font-bold text-white mb-1">Analysis Complete</h2>
-                                <p class="text-slate-400 text-sm">Source: ${data.filename}</p>
+                    <div class="bg-surface border border-border rounded-lg divide-y divide-border">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-medium text-white">API Access</h3>
+                                    <p class="text-sm text-zinc-500">Manage programmable access to the DeltaPro Engine.</p>
+                                </div>
+                                <button class="text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded border border-zinc-700">Rotate Keys</button>
                             </div>
-                            <div class="text-right">
-                                <div class="text-4xl font-bold ${riskColor}">${data.riskScore}/100</div>
-                                <div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Suitability Score</div>
+                            <div class="bg-black/50 p-3 rounded font-mono text-xs text-zinc-400 flex justify-between items-center group">
+                                <span>dp_live_83749283748293...</span>
+                                <i class="fa-regular fa-copy cursor-pointer hover:text-white"></i>
                             </div>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-300 uppercase mb-4">Detected Capabilities</h3>
-                                <div class="flex flex-wrap gap-2">
-                                    ${data.skills.map(s => `<span class="px-3 py-1 bg-brand-900/50 text-brand-400 border border-brand-500/30 rounded text-sm">${s}</span>`).join('')}
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-medium text-white">Feature Flags</h3>
+                                    <p class="text-sm text-zinc-500">Control beta features for your organization.</p>
                                 </div>
                             </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-300 uppercase mb-4">Critical Gaps</h3>
-                                <div class="flex flex-wrap gap-2">
-                                    ${data.missing.map(s => `<span class="px-3 py-1 bg-red-900/20 text-red-400 border border-red-500/30 rounded text-sm">${s}</span>`).join('')}
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-zinc-300">Advanced Risk Prediction (Beta)</span>
+                                    <div class="w-10 h-5 bg-primary rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-zinc-300">Global Talent Benchmarking</span>
+                                    <div class="w-10 h-5 bg-zinc-700 rounded-full relative cursor-pointer"><div class="absolute left-1 top-1 w-3 h-3 bg-zinc-400 rounded-full"></div></div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="mt-8 pt-6 border-t border-slate-700">
-                             <h3 class="text-sm font-bold text-slate-300 uppercase mb-4">Visual Alignment</h3>
-                             <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
-                                <div class="${barColor} h-full" style="width: ${data.riskScore}%"></div>
-                             </div>
                         </div>
                     </div>
-                `;
-            }
+                </div>
+            `
         };
 
-        /**
-         * CHARTS
-         * ------------------------------------------
-         */
-        const Charts = {
-            renderMain() {
-                const ctx = document.getElementById('mainChart');
-                if(!ctx) return;
+        // --- 3. CONTROLLER LOGIC ---
+        const App = {
+            init() {
+                // Initialize Charts
+                this.navigate('dashboard');
+                
+                // Keyboard Shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        Palette.toggle();
+                    }
+                    if (e.key === 'Escape') Palette.close();
+                });
+            },
 
+            navigate(viewName) {
+                // UI Update
+                document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+                event?.currentTarget?.classList.add('active'); // simplified for proto
+                
+                // Title Update
+                const titles = { dashboard: 'Dashboard', directory: 'Talent Directory', inference: 'Inference Engine', settings: 'Settings' };
+                document.getElementById('page-title').innerText = titles[viewName] || 'DeltaPro';
+                
+                // Render View
+                const content = Views[viewName] ? Views[viewName]() : `<div class="p-10 text-zinc-500">View not implemented.</div>`;
+                document.getElementById('app-view').innerHTML = content;
+
+                if (viewName === 'dashboard') this.renderCharts();
+            },
+
+            runInference() {
+                const loader = document.getElementById('inference-loader');
+                loader.classList.remove('hidden');
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    alert("Analysis Complete: 12 new skills indexed.");
+                }, 2000);
+            },
+
+            renderCharts() {
+                const ctx = document.getElementById('mainChart');
+                if (!ctx) return;
+                
                 new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [
-                            {
-                                label: 'Required Capacity',
-                                data: [65, 70, 80, 85, 90, 95],
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                tension: 0.4,
-                                fill: true
-                            },
-                            {
-                                label: 'Actual Talent Supply',
-                                data: [60, 62, 65, 68, 75, 80],
-                                borderColor: '#94a3b8',
-                                borderDash: [5, 5],
-                                tension: 0.4
-                            }
-                        ]
+                        datasets: [{
+                            label: 'Avg Skill Proficiency',
+                            data: [65, 68, 72, 71, 75, 78],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Market Baseline',
+                            data: [60, 62, 64, 66, 68, 70],
+                            borderColor: '#52525b',
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { labels: { color: '#94a3b8' } } },
+                        plugins: { legend: { display: false } },
                         scales: {
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                            x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                            y: { grid: { color: '#27272a' } },
+                            x: { grid: { display: false } }
                         }
                     }
                 });
             }
         };
 
-        // --- BOOTSTRAP ---
-        window.addEventListener('DOMContentLoaded', () => {
-            Router.init();
-        });
+        const Palette = {
+            toggle() {
+                const el = document.getElementById('cmd-palette');
+                el.classList.toggle('hidden');
+            },
+            close() {
+                document.getElementById('cmd-palette').classList.add('hidden');
+            }
+        };
+
+        // Start App
+        App.init();
 
     </script>
+    <style>
+        @keyframes progress { 0% { width: 0%; margin-left: 0; } 50% { width: 100%; margin-left: 0; } 100% { width: 0%; margin-left: 100%; } }
+    </style>
 </body>
 </html>
