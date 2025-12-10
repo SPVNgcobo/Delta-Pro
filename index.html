@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeltaPro | Enterprise Workspace</title>
+    <title>DeltaPro | Sovereign Compliance Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,8 +21,10 @@
                         surface: '#18181b',
                         surfaceHighlight: '#27272a',
                         border: '#27272a',
-                        primary: '#3b82f6',
-                        primaryDim: 'rgba(59, 130, 246, 0.1)'
+                        primary: '#f59e0b', /* Changed to Amber/Gold for "Sovereign/Gold" feel */
+                        primaryDim: 'rgba(245, 158, 11, 0.1)',
+                        success: '#10b981',
+                        danger: '#ef4444'
                     }
                 }
             }
@@ -31,77 +33,76 @@
     <style>
         body { background-color: #09090b; color: #e4e4e7; }
         .glass { background: rgba(24, 24, 27, 0.7); backdrop-filter: blur(8px); }
-        .sidebar-link.active { background: #27272a; color: white; border-right: 2px solid #3b82f6; }
+        .sidebar-link.active { background: #27272a; color: white; border-right: 2px solid #f59e0b; }
+        .score-card { background: linear-gradient(145deg, #18181b, #0f0f11); }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #09090b; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-
-        /* Command Palette Animation */
-        .modal-enter { opacity: 0; transform: scale(0.95); }
-        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.1s ease-out; }
+        /* B-BBEE Level Badge Animation */
+        .level-badge { animation: pulse-gold 3s infinite; }
+        @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden text-sm">
 
     <aside class="w-64 border-r border-border bg-surface flex flex-col z-20">
-        <div class="h-14 flex items-center gap-3 px-4 border-b border-border">
-            <div class="w-6 h-6 bg-primary rounded flex items-center justify-center text-white text-xs font-bold">D</div>
-            <span class="font-bold tracking-tight text-white">DeltaPro <span class="text-[10px] text-zinc-500 font-normal">ENT</span></span>
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-border">
+            <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded flex items-center justify-center text-black text-xs font-bold shadow-lg shadow-amber-900/20">D</div>
+            <div class="flex flex-col">
+                <span class="font-bold tracking-tight text-white leading-none">DeltaPro</span>
+                <span class="text-[10px] text-zinc-500 font-normal mt-1">ZA ENTERPRISE</span>
+            </div>
         </div>
 
-        <div class="p-3">
-            <div class="mb-4">
-                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2">Platform</div>
+        <div class="p-3 flex-1 overflow-y-auto">
+            <div class="mb-6">
+                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2">Core Intelligence</div>
                 <button onclick="App.navigate('dashboard')" class="sidebar-link active w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
-                    <i class="fa-solid fa-chart-pie w-4"></i> Dashboard
-                </button>
-                <button onclick="App.navigate('directory')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
-                    <i class="fa-solid fa-users w-4"></i> Talent Directory
+                    <i class="fa-solid fa-chart-pie w-4"></i> Executive View
                 </button>
                 <button onclick="App.navigate('inference')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
-                    <i class="fa-solid fa-microchip w-4"></i> AI Inference
+                    <i class="fa-solid fa-microchip w-4"></i> Skill Inference
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2 text-amber-500">Compliance & Governance</div>
+                <button onclick="App.navigate('compliance')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-scale-balanced w-4 text-amber-500"></i> B-BBEE Scorecard
+                </button>
+                <button onclick="App.navigate('directory')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
+                    <i class="fa-solid fa-id-card w-4"></i> Talent Wallets
                 </button>
             </div>
 
             <div class="mb-4">
-                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2">Configuration</div>
-                <button onclick="App.navigate('integrations')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
-                    <i class="fa-solid fa-plug w-4"></i> Integrations
-                </button>
+                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-2">System</div>
                 <button onclick="App.navigate('settings')" class="sidebar-link w-full text-left px-3 py-2 rounded-md text-zinc-400 hover:text-white hover:bg-surfaceHighlight transition flex items-center gap-3">
-                    <i class="fa-solid fa-cog w-4"></i> Settings
+                    <i class="fa-solid fa-shield-halved w-4"></i> AtHash Privacy
                 </button>
             </div>
         </div>
 
-        <div class="mt-auto p-4 border-t border-border">
-            <div class="flex items-center gap-3">
-                <img src="https://ui-avatars.com/api/?name=Admin+User&background=27272a&color=fff" class="w-8 h-8 rounded-full border border-zinc-600">
-                <div class="flex-1 min-w-0">
-                    <div class="text-xs font-medium text-white truncate">sysadmin@zaziza.com</div>
-                    <div class="text-[10px] text-zinc-500">Global Admin</div>
-                </div>
+        <div class="p-4 border-t border-border bg-black/20">
+            <div class="flex items-center justify-between text-[10px] text-zinc-500">
+                <span>Server: JNB-1 (South Africa)</span>
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
             </div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col relative bg-background">
         
-        <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-background/50 backdrop-blur sticky top-0 z-10">
-            <div class="flex items-center gap-4 text-zinc-400">
-                <span id="page-title" class="font-medium text-white">Dashboard</span>
+        <header class="h-16 border-b border-border flex items-center justify-between px-8 bg-background/50 backdrop-blur sticky top-0 z-10">
+            <div class="flex flex-col">
+                <span id="page-title" class="font-bold text-lg text-white">Dashboard</span>
+                <span id="page-subtitle" class="text-xs text-zinc-500">Overview of organizational capability</span>
             </div>
             <div class="flex items-center gap-4">
-                <button onclick="Palette.toggle()" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded text-xs text-zinc-400 hover:border-zinc-500 transition">
-                    <span>Search or jump to...</span>
-                    <kbd class="font-mono bg-zinc-800 px-1 rounded text-[10px] border border-zinc-700">Ctrl K</kbd>
-                </button>
-                <button class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white relative">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1 bg-surface border border-amber-900/30 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span class="text-xs text-amber-500 font-medium">Compliance Audit Active</span>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white bg-surface rounded-full border border-border">
                     <i class="fa-regular fa-bell"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
             </div>
         </header>
@@ -111,334 +112,303 @@
 
     </main>
 
-    <div id="cmd-palette" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center pt-[20vh]" onclick="Palette.toggle()">
-        <div class="w-full max-w-lg bg-surface border border-border rounded-xl shadow-2xl overflow-hidden modal-enter-active" onclick="event.stopPropagation()">
-            <div class="flex items-center px-4 border-b border-border">
-                <i class="fa-solid fa-search text-zinc-500 mr-3"></i>
-                <input type="text" placeholder="Type a command or search..." class="w-full h-12 bg-transparent border-none focus:ring-0 text-white placeholder-zinc-500 outline-none">
-                <kbd class="font-mono text-[10px] text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">ESC</kbd>
-            </div>
-            <div class="py-2">
-                <div class="px-4 py-2 text-[10px] font-bold text-zinc-500 uppercase">Suggestions</div>
-                <button onclick="App.navigate('inference'); Palette.toggle()" class="w-full text-left px-4 py-2 text-zinc-300 hover:bg-primary hover:text-white flex items-center gap-3">
-                    <i class="fa-solid fa-plus w-3"></i> New Talent Analysis
-                </button>
-                <button onclick="App.navigate('directory'); Palette.toggle()" class="w-full text-left px-4 py-2 text-zinc-300 hover:bg-primary hover:text-white flex items-center gap-3">
-                    <i class="fa-solid fa-user-group w-3"></i> Search Directory
-                </button>
-            </div>
-            <div class="bg-zinc-900 px-4 py-2 text-[10px] text-zinc-500 flex justify-between">
-                <span>DeltaPro Intelligence Engine v2.1.0</span>
-                <span>Zaziza Holdings</span>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // --- 1. MOCK DATA LAYER (The "Database") ---
+        // --- 1. MOCK DATA LAYER (SA Contextualized) ---
         const DB = {
-            users: Array.from({ length: 25 }, (_, i) => ({
-                id: `EMP-${1000 + i}`,
-                name: ['Sarah Connor', 'John Smith', 'Wei Chen', 'Amara Okafor', 'Elena Vost'][i % 5] + ` ${i}`,
-                role: ['Frontend Dev', 'Backend Lead', 'Data Scientist', 'DevOps Eng', 'Product Mgr'][i % 5],
-                dept: ['Engineering', 'Platform', 'AI Research', 'Ops', 'Product'][i % 5],
-                riskScore: Math.floor(Math.random() * 100),
-                lastActive: `${Math.floor(Math.random() * 24)}h ago`
+            users: Array.from({ length: 15 }, (_, i) => ({
+                id: `ZA-${202400 + i}`,
+                name: ['Thabo Mokoena', 'Sarah Van Der Merwe', 'Keshav Naidoo', 'Lindiwe Zulu', 'James Stirling'][i % 5] + ` ${i}`,
+                role: ['Python Engineer', 'Solutions Arch', 'Data Analyst', 'Product Owner', 'DevOps Lead'][i % 5],
+                race: ['African', 'White', 'Indian', 'African', 'White'][i % 5],
+                gender: ['Male', 'Female', 'Male', 'Female', 'Male'][i % 5],
+                skillSpend: Math.floor(Math.random() * (50000 - 5000) + 5000), // R5000 - R50000
+                verifiedSkills: Math.floor(Math.random() * 12) + 3,
+                status: 'Active'
             })),
-            logs: [
-                { action: "API Key Created", user: "Admin", time: "2m ago" },
-                { action: "Integration Sync (Workday)", status: "Success", time: "15m ago" },
-                { action: "Talent Analysis #4022", status: "Complete", time: "1h ago" }
-            ]
+            financials: {
+                target: 6000000, // R6 Million target
+                current: 4250000  // R4.25 Million spent
+            }
         };
 
-        // --- 2. COMPONENTS & VIEWS ---
+        // --- 2. FORMATTERS ---
+        const Format = {
+            currency: (val) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(val)
+        };
+
+        // --- 3. VIEWS ---
         const Views = {
             dashboard: () => `
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-surface border border-border p-5 rounded-lg">
-                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">Total Headcount</div>
-                        <div class="text-3xl font-bold text-white">1,240</div>
-                        <div class="flex items-center gap-2 mt-2 text-xs text-green-500"><i class="fa-solid fa-arrow-up"></i> 12% vs last Q</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="score-card p-6 rounded-xl border border-border relative overflow-hidden group">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fa-solid fa-users text-6xl text-white"></i></div>
+                        <div class="text-zinc-500 text-xs font-bold uppercase mb-2">Total Verified Talent</div>
+                        <div class="text-4xl font-bold text-white">${DB.users.length * 84}</div>
+                        <div class="text-xs text-green-500 mt-2 font-medium">94% Verification Rate</div>
                     </div>
-                    <div class="bg-surface border border-border p-5 rounded-lg">
-                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">Critical Flight Risks</div>
-                        <div class="text-3xl font-bold text-white">42</div>
-                        <div class="flex items-center gap-2 mt-2 text-xs text-red-500"><i class="fa-solid fa-circle-exclamation"></i> Action Required</div>
+                    
+                    <div class="score-card p-6 rounded-xl border border-amber-900/50 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><i class="fa-solid fa-award text-6xl text-amber-500"></i></div>
+                        <div class="text-amber-500 text-xs font-bold uppercase mb-2">Skills Development Spend (YTD)</div>
+                        <div class="text-4xl font-bold text-white">${Format.currency(DB.financials.current)}</div>
+                        <div class="w-full bg-zinc-800 h-1.5 mt-3 rounded-full overflow-hidden">
+                            <div class="bg-amber-500 h-full" style="width: ${(DB.financials.current / DB.financials.target) * 100}%"></div>
+                        </div>
+                        <div class="text-xs text-zinc-500 mt-1 flex justify-between">
+                            <span>Progress to Target</span>
+                            <span>${Math.round((DB.financials.current / DB.financials.target) * 100)}%</span>
+                        </div>
                     </div>
-                    <div class="bg-surface border border-border p-5 rounded-lg">
-                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">Skill Gaps (Org)</div>
-                        <div class="text-3xl font-bold text-white">18%</div>
-                        <div class="flex items-center gap-2 mt-2 text-xs text-zinc-500">Avg. Deficiency</div>
-                    </div>
-                    <div class="bg-surface border border-border p-5 rounded-lg">
-                        <div class="text-zinc-500 text-xs font-medium uppercase mb-2">System Health</div>
-                        <div class="text-3xl font-bold text-green-400">99.9%</div>
-                        <div class="flex items-center gap-2 mt-2 text-xs text-zinc-500">API Latency: 42ms</div>
+
+                    <div class="score-card p-6 rounded-xl border border-border relative overflow-hidden">
+                        <div class="text-zinc-500 text-xs font-bold uppercase mb-2">Critical Shortage Risks</div>
+                        <div class="text-4xl font-bold text-red-500">3</div>
+                        <div class="text-xs text-zinc-400 mt-2">Senior Python Backend (2), DevOps (1)</div>
+                        <button class="mt-4 text-xs bg-red-500/10 text-red-500 px-3 py-1.5 rounded border border-red-500/20 hover:bg-red-500 hover:text-white transition">View Recruitment Plan</button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-surface border border-border p-6 rounded-lg">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-medium text-white">Workforce Skill Velocity</h3>
-                            <select class="bg-zinc-900 border border-zinc-700 text-xs rounded px-2 py-1 text-zinc-400">
-                                <option>Last 6 Months</option>
-                                <option>Year to Date</option>
-                            </select>
+                <div class="bg-surface border border-border rounded-xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-white">Real-Time Capability Heatmap</h3>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-zinc-800 text-xs rounded text-zinc-400">Engineering</span>
+                            <span class="px-2 py-1 bg-zinc-800 text-xs rounded text-zinc-400">Product</span>
                         </div>
-                        <div class="h-64"><canvas id="mainChart"></canvas></div>
+                    </div>
+                    <div class="h-80 w-full">
+                        <canvas id="skillChart"></canvas>
+                    </div>
+                </div>
+            `,
+
+            compliance: () => `
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-surface border border-border rounded-xl p-8 flex items-center justify-between bg-gradient-to-r from-surface to-amber-900/10">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white">B-BBEE Skills Scorecard</h2>
+                                <p class="text-zinc-400 text-sm mt-1">Projected Level based on current verified training data.</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs text-amber-500 font-bold uppercase tracking-widest mb-1">Projected Level</div>
+                                <div class="w-16 h-16 rounded-full border-4 border-amber-500 flex items-center justify-center text-2xl font-bold text-white bg-black level-badge">2</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-surface border border-border rounded-xl p-6">
+                            <h3 class="font-bold text-white mb-4">EAP Targets (Economically Active Population)</h3>
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-xs text-zinc-500 uppercase bg-zinc-900/50">
+                                    <tr>
+                                        <th class="p-3 rounded-l">Demographic</th>
+                                        <th class="p-3">Current Headcount</th>
+                                        <th class="p-3">Skills Spend</th>
+                                        <th class="p-3 rounded-r">Target Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-800">
+                                    <tr>
+                                        <td class="p-3 font-medium text-white">African (Male)</td>
+                                        <td class="p-3">42%</td>
+                                        <td class="p-3 text-white">${Format.currency(1200000)}</td>
+                                        <td class="p-3"><span class="text-green-500 text-xs bg-green-500/10 px-2 py-1 rounded border border-green-500/20">On Track</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-medium text-white">African (Female)</td>
+                                        <td class="p-3">38%</td>
+                                        <td class="p-3 text-white">${Format.currency(950000)}</td>
+                                        <td class="p-3"><span class="text-amber-500 text-xs bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">Near Target</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-medium text-white">Indian/Coloured</td>
+                                        <td class="p-3">12%</td>
+                                        <td class="p-3 text-white">${Format.currency(400000)}</td>
+                                        <td class="p-3"><span class="text-green-500 text-xs bg-green-500/10 px-2 py-1 rounded border border-green-500/20">Compliant</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="bg-surface border border-border p-6 rounded-lg flex flex-col">
-                        <h3 class="font-medium text-white mb-4">System Events</h3>
-                        <div class="flex-1 overflow-y-auto space-y-4">
-                            ${DB.logs.map(log => `
-                                <div class="flex gap-3 text-sm">
-                                    <div class="w-2 h-2 mt-1.5 rounded-full bg-zinc-600"></div>
+                    <div class="space-y-6">
+                         <div class="bg-surface border border-border rounded-xl p-6">
+                            <h3 class="font-bold text-white mb-4">Required Actions</h3>
+                            <ul class="space-y-3">
+                                <li class="flex gap-3 items-start">
+                                    <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-1"></i>
                                     <div>
-                                        <div class="text-zinc-300">${log.action}</div>
-                                        <div class="text-xs text-zinc-500">${log.user || log.status} • ${log.time}</div>
+                                        <div class="text-sm text-white">Increase Learnederships</div>
+                                        <div class="text-xs text-zinc-500">Shortfall of R450k in Cat B/C training for Junior African Females.</div>
                                     </div>
-                                </div>
-                            `).join('')}
+                                </li>
+                                <li class="flex gap-3 items-start">
+                                    <i class="fa-regular fa-file-pdf text-zinc-400 mt-1"></i>
+                                    <div>
+                                        <div class="text-sm text-white">Generate Audit Pack</div>
+                                        <div class="text-xs text-zinc-500">Prepare WSP/ATR submission for SETA.</div>
+                                        <button class="mt-2 text-xs w-full py-1 bg-zinc-800 border border-zinc-700 rounded hover:text-white transition">Download PDF</button>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <button class="mt-4 w-full py-2 text-xs text-zinc-500 border border-zinc-700 rounded hover:bg-zinc-800 transition">View All Logs</button>
                     </div>
                 </div>
             `,
 
             directory: () => `
                 <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-white">Verified Talent Wallets</h2>
                     <div class="flex gap-2">
-                        <input type="text" placeholder="Search employees..." class="bg-surface border border-border rounded-lg px-4 py-2 text-sm text-white w-64 focus:border-primary outline-none">
-                        <button class="px-4 py-2 bg-surface border border-border rounded-lg text-zinc-400 hover:text-white text-sm"><i class="fa-solid fa-filter mr-2"></i> Filter</button>
+                        <button class="px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-white">Export to CSV</button>
                     </div>
-                    <button class="px-4 py-2 bg-primary hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition shadow-lg shadow-blue-900/20">
-                        <i class="fa-solid fa-plus mr-2"></i> Add Talent
-                    </button>
                 </div>
-
-                <div class="bg-surface border border-border rounded-lg overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-zinc-900/50 text-xs font-medium text-zinc-500 uppercase">
-                            <tr>
-                                <th class="px-6 py-3">Employee</th>
-                                <th class="px-6 py-3">Role</th>
-                                <th class="px-6 py-3">Department</th>
-                                <th class="px-6 py-3">Retention Risk</th>
-                                <th class="px-6 py-3">Status</th>
-                                <th class="px-6 py-3"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border text-sm">
-                            ${DB.users.map(u => `
-                                <tr class="hover:bg-zinc-800/50 transition group">
-                                    <td class="px-6 py-4 font-medium text-white">${u.name} <div class="text-xs text-zinc-500 font-normal">${u.id}</div></td>
-                                    <td class="px-6 py-4 text-zinc-300">${u.role}</td>
-                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-400">${u.dept}</span></td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-                                                <div class="h-full ${u.riskScore > 70 ? 'bg-green-500' : u.riskScore > 40 ? 'bg-yellow-500' : 'bg-red-500'}" style="width: ${u.riskScore}%"></div>
-                                            </div>
-                                            <span class="text-xs text-zinc-500">${u.riskScore}%</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-xs text-zinc-400">Active ${u.lastActive}</td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button class="text-zinc-500 hover:text-white opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-ellipsis"></i></button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${DB.users.map(u => `
+                        <div class="bg-surface border border-border p-4 rounded-xl hover:border-zinc-500 transition group cursor-pointer">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-400 border border-zinc-600">${u.name.charAt(0)}</div>
+                                    <div>
+                                        <div class="text-sm font-bold text-white">${u.name}</div>
+                                        <div class="text-xs text-zinc-500">${u.role}</div>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-shield-check text-green-500" title="Identity Verified by AtHash"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-zinc-500">Verified Skills</span>
+                                    <span class="text-white font-mono">${u.verifiedSkills}</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-zinc-500">Skills Spend (YTD)</span>
+                                    <span class="text-amber-500 font-mono">${Format.currency(u.skillSpend)}</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-zinc-500">Equity Category</span>
+                                    <span class="text-zinc-400">${u.race} / ${u.gender}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             `,
-
+            
             inference: () => `
-                <div class="max-w-3xl mx-auto">
-                    <div class="text-center mb-10">
-                        <h2 class="text-2xl font-bold text-white">AI Skill Inference Engine</h2>
-                        <p class="text-zinc-400 mt-2">Upload unstructured data to generate capability heatmaps.</p>
+                <div class="max-w-2xl mx-auto text-center pt-10">
+                    <div class="w-20 h-20 bg-zinc-800 rounded-2xl mx-auto flex items-center justify-center mb-6 relative">
+                        <div class="absolute inset-0 bg-amber-500/20 blur-xl rounded-full"></div>
+                        <i class="fa-solid fa-brain text-4xl text-amber-500 relative z-10"></i>
                     </div>
-
-                    <div class="bg-surface border border-dashed border-zinc-700 rounded-xl p-12 text-center hover:border-primary hover:bg-primaryDim transition cursor-pointer group relative overflow-hidden" onclick="App.runInference()">
-                        <div class="relative z-10">
-                            <div class="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
-                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-zinc-400 group-hover:text-primary"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-white">Drop Employee Data</h3>
-                            <p class="text-zinc-500 text-sm mt-1">Supports PDF, CSV, JSON (Max 50MB)</p>
-                        </div>
-                        
-                        <div id="inference-loader" class="hidden absolute inset-0 bg-surface flex flex-col items-center justify-center z-20">
-                            <div class="text-primary font-mono text-sm mb-2">Analyzing Vector Embeddings...</div>
-                            <div class="w-48 h-1 bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary animate-[progress_2s_ease-in-out_infinite]"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <h3 class="text-xs font-bold text-zinc-500 uppercase mb-4">Recent Analyses</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="p-4 border border-border rounded-lg bg-surface hover:border-zinc-600 transition cursor-pointer">
-                                <div class="flex justify-between mb-2">
-                                    <i class="fa-regular fa-file-pdf text-red-400"></i>
-                                    <span class="text-xs text-green-400 font-mono">COMPLETED</span>
-                                </div>
-                                <div class="text-sm font-medium text-white">Backend_Team_Audit_Q4.pdf</div>
-                                <div class="text-xs text-zinc-500 mt-1">24 Employees Processed</div>
-                            </div>
-                             <div class="p-4 border border-border rounded-lg bg-surface hover:border-zinc-600 transition cursor-pointer">
-                                <div class="flex justify-between mb-2">
-                                    <i class="fa-regular fa-file-excel text-green-600"></i>
-                                    <span class="text-xs text-yellow-500 font-mono">PROCESSING</span>
-                                </div>
-                                <div class="text-sm font-medium text-white">Sales_Kickoff_Roster.csv</div>
-                                <div class="text-xs text-zinc-500 mt-1">Estimating skills...</div>
-                            </div>
-                        </div>
+                    <h2 class="text-3xl font-bold text-white mb-4">Vector Skill Contextualization</h2>
+                    <p class="text-zinc-400 mb-8">DeltaPro uses RAG (Retrieval-Augmented Generation) to infer skills from GitHub commits, Jira tickets, and Slack velocity—not just keywords.</p>
+                    
+                    <div class="bg-surface border border-dashed border-zinc-700 rounded-xl p-12 hover:border-amber-500 transition cursor-pointer group">
+                        <i class="fa-solid fa-upload text-3xl text-zinc-500 group-hover:text-amber-500 mb-4 transition"></i>
+                        <h3 class="text-white font-medium">Upload Project Manifest or Repo Link</h3>
+                        <p class="text-xs text-zinc-500 mt-2">Connecting to Vector DB (Pinecone) via Zaziza Private Cloud...</p>
                     </div>
                 </div>
             `,
 
             settings: () => `
-                <div class="max-w-4xl">
-                    <h2 class="text-xl font-bold text-white mb-6">Platform Configuration</h2>
-                    
-                    <div class="bg-surface border border-border rounded-lg divide-y divide-border">
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 class="font-medium text-white">API Access</h3>
-                                    <p class="text-sm text-zinc-500">Manage programmable access to the DeltaPro Engine.</p>
-                                </div>
-                                <button class="text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded border border-zinc-700">Rotate Keys</button>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded font-mono text-xs text-zinc-400 flex justify-between items-center group">
-                                <span>dp_live_83749283748293...</span>
-                                <i class="fa-regular fa-copy cursor-pointer hover:text-white"></i>
-                            </div>
+                <div class="max-w-3xl">
+                    <h2 class="text-xl font-bold text-white mb-6">Privacy & Sovereignty</h2>
+                    <div class="bg-surface border border-border rounded-xl p-6 mb-6">
+                        <h3 class="font-bold text-white mb-2">AtHash Anonymization Layer</h3>
+                        <p class="text-sm text-zinc-400 mb-4">Ensure compliance with POPIA Act 4 of 2013 by masking PII before inference.</p>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-zinc-800">
+                            <span class="text-sm text-white">Mask Employee Names</span>
+                            <i class="fa-solid fa-toggle-on text-2xl text-green-500 cursor-pointer"></i>
                         </div>
-
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 class="font-medium text-white">Feature Flags</h3>
-                                    <p class="text-sm text-zinc-500">Control beta features for your organization.</p>
-                                </div>
-                            </div>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-zinc-300">Advanced Risk Prediction (Beta)</span>
-                                    <div class="w-10 h-5 bg-primary rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div></div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-zinc-300">Global Talent Benchmarking</span>
-                                    <div class="w-10 h-5 bg-zinc-700 rounded-full relative cursor-pointer"><div class="absolute left-1 top-1 w-3 h-3 bg-zinc-400 rounded-full"></div></div>
-                                </div>
-                            </div>
+                         <div class="flex items-center justify-between py-3 border-b border-zinc-800">
+                            <span class="text-sm text-white">Mask Salary/Financial Data</span>
+                            <i class="fa-solid fa-toggle-on text-2xl text-green-500 cursor-pointer"></i>
+                        </div>
+                        <div class="flex items-center justify-between py-3">
+                            <span class="text-sm text-white">Data Residency</span>
+                            <span class="text-xs bg-zinc-800 px-2 py-1 rounded text-zinc-400">Cape Town (AWS af-south-1)</span>
                         </div>
                     </div>
                 </div>
             `
         };
 
-        // --- 3. CONTROLLER LOGIC ---
+        // --- 4. CONTROLLER ---
         const App = {
             init() {
-                // Initialize Charts
                 this.navigate('dashboard');
-                
-                // Keyboard Shortcuts
-                document.addEventListener('keydown', (e) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                        e.preventDefault();
-                        Palette.toggle();
-                    }
-                    if (e.key === 'Escape') Palette.close();
-                });
             },
 
-            navigate(viewName) {
-                // UI Update
+            navigate(view) {
+                // Handle Sidebar Active State
                 document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
-                event?.currentTarget?.classList.add('active'); // simplified for proto
-                
-                // Title Update
-                const titles = { dashboard: 'Dashboard', directory: 'Talent Directory', inference: 'Inference Engine', settings: 'Settings' };
-                document.getElementById('page-title').innerText = titles[viewName] || 'DeltaPro';
-                
-                // Render View
-                const content = Views[viewName] ? Views[viewName]() : `<div class="p-10 text-zinc-500">View not implemented.</div>`;
-                document.getElementById('app-view').innerHTML = content;
+                event?.currentTarget?.classList.add('active');
 
-                if (viewName === 'dashboard') this.renderCharts();
+                // Update Titles
+                const titles = {
+                    dashboard: ['Executive Dashboard', 'Real-time Organization Capability'],
+                    compliance: ['Sovereign Compliance', 'B-BBEE & Skills Audit Scorecard'],
+                    directory: ['Talent Wallets', 'Verified Employee Skill Records'],
+                    inference: ['AI Inference Engine', 'Vector-based Skill Extraction'],
+                    settings: ['System Configuration', 'Privacy & Integrations']
+                };
+                
+                if(titles[view]) {
+                    document.getElementById('page-title').innerText = titles[view][0];
+                    document.getElementById('page-subtitle').innerText = titles[view][1];
+                }
+
+                // Inject View
+                document.getElementById('app-view').innerHTML = Views[view]();
+
+                // Init Charts if dashboard
+                if(view === 'dashboard') this.renderChart();
             },
 
-            runInference() {
-                const loader = document.getElementById('inference-loader');
-                loader.classList.remove('hidden');
-                setTimeout(() => {
-                    loader.classList.add('hidden');
-                    alert("Analysis Complete: 12 new skills indexed.");
-                }, 2000);
-            },
-
-            renderCharts() {
-                const ctx = document.getElementById('mainChart');
-                if (!ctx) return;
+            renderChart() {
+                const ctx = document.getElementById('skillChart');
+                if(!ctx) return;
                 
                 new Chart(ctx, {
-                    type: 'line',
+                    type: 'radar',
                     data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        labels: ['Python', 'Cloud Arch', 'Leadership', 'CyberSec', 'Data Science', 'Agile'],
                         datasets: [{
-                            label: 'Avg Skill Proficiency',
-                            data: [65, 68, 72, 71, 75, 78],
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4
+                            label: 'Org Capability',
+                            data: [85, 70, 60, 40, 75, 90],
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderColor: '#f59e0b',
+                            pointBackgroundColor: '#f59e0b'
                         }, {
-                            label: 'Market Baseline',
-                            data: [60, 62, 64, 66, 68, 70],
+                            label: 'Industry Avg',
+                            data: [60, 60, 65, 55, 60, 70],
                             borderColor: '#52525b',
                             borderDash: [5, 5],
-                            tension: 0.4
+                            fill: false,
+                            pointRadius: 0
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
                         scales: {
-                            y: { grid: { color: '#27272a' } },
-                            x: { grid: { display: false } }
-                        }
+                            r: {
+                                angleLines: { color: '#27272a' },
+                                grid: { color: '#27272a' },
+                                pointLabels: { color: '#a1a1aa' },
+                                ticks: { display: false, backdropColor: 'transparent' }
+                            }
+                        },
+                        plugins: { legend: { labels: { color: '#e4e4e7' } } }
                     }
                 });
             }
         };
 
-        const Palette = {
-            toggle() {
-                const el = document.getElementById('cmd-palette');
-                el.classList.toggle('hidden');
-            },
-            close() {
-                document.getElementById('cmd-palette').classList.add('hidden');
-            }
-        };
-
-        // Start App
         App.init();
-
     </script>
-    <style>
-        @keyframes progress { 0% { width: 0%; margin-left: 0; } 50% { width: 100%; margin-left: 0; } 100% { width: 0%; margin-left: 100%; } }
-    </style>
 </body>
 </html>
